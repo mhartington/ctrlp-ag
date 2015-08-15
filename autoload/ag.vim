@@ -1,73 +1,131 @@
 " =============================================================================
 " File:          autoload/ag.vim
-" Description:   Ag extension
-" Author:        Mike Hartington <github.com/mhartington>
+" Description:   Example extension for ctrlp.vim
 " =============================================================================
 
-" Init {{{1
-if exists('g:loaded_ctrlp_ag') && g:loaded_ctrlp_ag
-  fini
-en
-let g:loaded_ctrlp_ag = 1
+" To load this extension into ctrlp, add this to your vimrc:
+"
+"     let g:ctrlp_extensions = ['sample']
+"
+" Where 'sample' is the name of the file 'sample.vim'
+"
+" For multiple extensions:
+"
+"     let g:ctrlp_extensions = [
+"         \ 'my_extension',
+"         \ 'my_other_extension',
+"         \ ]
 
-cal add(g:ctrlp_ext_vars, {
-  \ 'init': 'ctrlp#line#init(s:crbufnr)',
-  \ 'accept': 'ctrlp#line#accept',
-  \ 'lname': 'ag',
-  \ 'sname': 'ag',
-  \ 'type': 'tabe',
+" Load guard
+if ( exists('g:loaded_ctrlp_sample') && g:loaded_ctrlp_sample )
+  \ || v:version < 700 || &cp
+  finish
+endif
+let g:loaded_ctrlp_sample = 1
+
+
+" Add this extension's settings to g:ctrlp_ext_vars
+"
+" Required:
+"
+" + init: the name of the input function including the brackets and any
+"         arguments
+"
+" + accept: the name of the action function (only the name)
+"
+" + lname & sname: the long and short names to use for the statusline
+"
+" + type: the matching type
+"   - line : match full line
+"   - path : match full line like a file or a directory path
+"   - tabs : match until first tab character
+"   - tabe : match until last tab character
+"
+" Optional:
+"
+" + enter: the name of the function to be called before starting ctrlp
+"
+" + exit: the name of the function to be called after closing ctrlp
+"
+" + opts: the name of the option handling function called when initialize
+"
+" + sort: disable sorting (enabled by default when omitted)
+"
+" + specinput: enable special inputs '..' and '@cd' (disabled by default)
+"
+call add(g:ctrlp_ext_vars, {
+  \ 'init': 'ctrlp#sample#init()',
+  \ 'accept': 'ctrlp#sample#accept',
+  \ 'lname': 'long statusline name',
+  \ 'sname': 'shortname',
+  \ 'type': 'line',
+  \ 'enter': 'ctrlp#sample#enter()',
+  \ 'exit': 'ctrlp#sample#exit()',
+  \ 'opts': 'ctrlp#sample#opts()',
+  \ 'sort': 0,
+  \ 'specinput': 0,
   \ })
 
+
+" Provide a list of strings to search in
+"
+" Return: a Vim's List
+"
+function! ctrlp#sample#init()
+  let input = [
+    \ 'Sed sodales fri magna, non egestas ante consequat nec.',
+    \ 'Aenean vel enim mattis ultricies erat.',
+    \ 'Donec vel ipsummauris euismod feugiat in ut augue.',
+    \ 'Aenean porttitous quam, id pellentesque diam adipiscing ut.',
+    \ 'Maecenas luctuss ipsum, vitae accumsan magna adipiscing sit amet.',
+    \ 'Nulla placerat  ante, feugiat egestas ligula fringilla vel.',
+    \ ]
+  return input
+endfunction
+
+
+" The action to perform on the selected string
+"
+" Arguments:
+"  a:mode   the mode that has been chosen by pressing <cr> <c-v> <c-t> or <c-x>
+"           the values are 'e', 'v', 't' and 'h', respectively
+"  a:str    the selected string
+"
+function! ctrlp#sample#accept(mode, str)
+  " For this example, just exit ctrlp and run help
+  call ctrlp#exit()
+  help ctrlp-extensions
+endfunction
+
+
+" (optional) Do something before enterting ctrlp
+function! ctrlp#sample#enter()
+endfunction
+
+
+" (optional) Do something after exiting ctrlp
+function! ctrlp#sample#exit()
+endfunction
+
+
+" (optional) Set or check for user options specific to this extension
+function! ctrlp#sample#opts()
+endfunction
+
+
+" Give the extension an ID
 let s:id = g:ctrlp_builtins + len(g:ctrlp_ext_vars)
-" Utilities {{{1
-fu! s:syntax()
-  if !ctrlp#nosy()
-    cal ctrlp#hicheck('CtrlPBufName', 'Directory')
-    cal ctrlp#hicheck('CtrlPTabExtra', 'Comment')
-    sy match CtrlPBufName '\t|\zs[^|]\+\ze|\d\+:\d\+|$'
-    sy match CtrlPTabExtra '\zs\t.*\ze$' contains=CtrlPBufName
-  en
-endf
-" Public {{{1
-fu! ctrlp#ag#init(bufnr)
-  let [lines, bufnr] = [[], exists('s:bufnr') ? s:bufnr : a:bufnr]
-  let bufs = exists('s:lnmode') && s:lnmode ? ctrlp#buffers('id') : [bufnr]
-  for bufnr in bufs
-    let [lfb, bufn] = [getbufline(bufnr, 1, '$'), bufname(bufnr)]
-    if lfb == [] && bufn != ''
-      let lfb = ctrlp#utils#readfile(fnamemodify(bufn, ':p'))
-    en
-    cal map(lfb, 'tr(v:val, ''  '', '' '')')
-    let [linenr, len_lfb] = [1, len(lfb)]
-    let buft = bufn == '' ? '[No Name]' : fnamemodify(bufn, ':t')
-    wh linenr <= len_lfb
-      let lfb[linenr - 1] .= '  |'.buft.'|'.bufnr.':'.linenr.'|'
-      let linenr += 1
-    endw
-    cal extend(lines, filter(lfb, 'v:val !~ ''^\s*\t|[^|]\+|\d\+:\d\+|$'''))
-  endfo
-  cal s:syntax()
-  retu lines
-endf
 
-fu! ctrlp#ag#accept(mode, str)
-  let info = matchlist(a:str, '\t|[^|]\+|\(\d\+\):\(\d\+\)|$')
-  let bufnr = str2nr(get(info, 1))
-  if bufnr
-    cal ctrlp#acceptfile(a:mode, bufnr, get(info, 2))
-  en
-endf
+" Allow it to be called later
+function! ctrlp#sample#id()
+  return s:id
+endfunction
 
-fu! ctrlp#ag#cmd(mode, ...)
-  let s:lnmode = a:mode
-  if a:0 && !empty(a:1)
-    let s:lnmode = 0
-    let bname = a:1 =~# '^%$\|^#\d*$' ? expand(a:1) : a:1
-    let s:bufnr = bufnr('^'.fnamemodify(bname, ':p').'$')
-  en
-  retu s:id
-endf
-"}}}
 
-" vim:fen:fdm=marker:fmr={{{,}}}:fdl=0:fdc=1:ts=2:sw=2:sts=2
+" Create a command to directly call the new search type
+"
+" Put this in vimrc or plugin/sample.vim
+" command! CtrlPSample call ctrlp#init(ctrlp#sample#id())
 
+
+" vim:nofen:fdl=0:ts=2:sw=2:sts=2
