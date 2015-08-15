@@ -1,2 +1,1 @@
-command! CtrlPSample call ctrlp#init(ctrlp#ag#id())
-
+com! -n=? -com=buffer CtrlPAg cal ctrlp#init(ctrlp#ag#cmd(1, <q-args>))
