@@ -1,13 +1,13 @@
 " =============================================================================
-" File:          autoload/ctrlp/sample.vim
+" File:          autoload/ctrlp/ag.vim
 " Description:   Example extension for ctrlp.vim
 " =============================================================================
 
 " To load this extension into ctrlp, add this to your vimrc:
 "
-"     let g:ctrlp_extensions = ['sample']
+"     let g:ctrlp_extensions = ['ag']
 "
-" Where 'sample' is the name of the file 'sample.vim'
+" Where 'ag' is the name of the file 'ag.vim'
 "
 " For multiple extensions:
 "
@@ -17,11 +17,11 @@
 "         \ ]
 
 " Load guard
-if ( exists('g:loaded_ctrlp_sample') && g:loaded_ctrlp_sample )
+if ( exists('g:loaded_ctrlp_ag') && g:loaded_ctrlp_ag )
   \ || v:version < 700 || &cp
   finish
 endif
-let g:loaded_ctrlp_sample = 1
+let g:loaded_ctrlp_ag = 1
 
 
 " Add this extension's settings to g:ctrlp_ext_vars
@@ -54,14 +54,14 @@ let g:loaded_ctrlp_sample = 1
 " + specinput: enable special inputs '..' and '@cd' (disabled by default)
 "
 call add(g:ctrlp_ext_vars, {
-  \ 'init': 'ctrlp#sample#init()',
-  \ 'accept': 'ctrlp#sample#accept',
+  \ 'init': 'ctrlp#ag#init()',
+  \ 'accept': 'ctrlp#ag#accept',
   \ 'lname': 'long statusline name',
   \ 'sname': 'shortname',
   \ 'type': 'line',
-  \ 'enter': 'ctrlp#sample#enter()',
-  \ 'exit': 'ctrlp#sample#exit()',
-  \ 'opts': 'ctrlp#sample#opts()',
+  \ 'enter': 'ctrlp#ag#enter()',
+  \ 'exit': 'ctrlp#ag#exit()',
+  \ 'opts': 'ctrlp#ag#opts()',
   \ 'sort': 0,
   \ 'specinput': 0,
   \ })
@@ -71,7 +71,7 @@ call add(g:ctrlp_ext_vars, {
 "
 " Return: a Vim's List
 "
-function! ctrlp#sample#init()
+function! ctrlp#ag#init()
   let input = [
     \ 'Sed sodales fri magna, non egestas ante consequat nec.',
     \ 'Aenean vel enim mattis ultricies erat.',
@@ -91,7 +91,7 @@ endfunction
 "           the values are 'e', 'v', 't' and 'h', respectively
 "  a:str    the selected string
 "
-function! ctrlp#sample#accept(mode, str)
+function! ctrlp#ag#accept(mode, str)
   " For this example, just exit ctrlp and run help
   call ctrlp#exit()
   help ctrlp-extensions
@@ -99,17 +99,17 @@ endfunction
 
 
 " (optional) Do something before enterting ctrlp
-function! ctrlp#sample#enter()
+function! ctrlp#ag#enter()
 endfunction
 
 
 " (optional) Do something after exiting ctrlp
-function! ctrlp#sample#exit()
+function! ctrlp#ag#exit()
 endfunction
 
 
 " (optional) Set or check for user options specific to this extension
-function! ctrlp#sample#opts()
+function! ctrlp#ag#opts()
 endfunction
 
 
@@ -117,15 +117,15 @@ endfunction
 let s:id = g:ctrlp_builtins + len(g:ctrlp_ext_vars)
 
 " Allow it to be called later
-function! ctrlp#sample#id()
+function! ctrlp#ag#id()
   return s:id
 endfunction
 
 
 " Create a command to directly call the new search type
 "
-" Put this in vimrc or plugin/sample.vim
-" command! CtrlPSample call ctrlp#init(ctrlp#sample#id())
+" Put this in vimrc or plugin/ag.vim
+" command! CtrlPSample call ctrlp#init(ctrlp#ag#id())
 
 
 " vim:nofen:fdl=0:ts=2:sw=2:sts=2
