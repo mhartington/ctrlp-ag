@@ -1,20 +1,20 @@
 " =============================================================================
-" File:          autoload/ctrlp-ag.vim
-" Description:   Line extension
-" Author:        Kien Nguyen <github.com/kien>
+" File:          autoload/ag.vim
+" Description:   Ag extension
+" Author:        Mike Hartington <github.com/mhartington>
 " =============================================================================
 
 " Init {{{1
-if exists('g:loaded_ctrlp_line') && g:loaded_ctrlp_line
+if exists('g:loaded_ctrlp_ag') && g:loaded_ctrlp_ag
   fini
 en
-let g:loaded_ctrlp_line = 1
+let g:loaded_ctrlp_ag = 1
 
 cal add(g:ctrlp_ext_vars, {
   \ 'init': 'ctrlp#line#init(s:crbufnr)',
   \ 'accept': 'ctrlp#line#accept',
-  \ 'lname': 'lines',
-  \ 'sname': 'lns',
+  \ 'lname': 'ag',
+  \ 'sname': 'ag',
   \ 'type': 'tabe',
   \ })
 
@@ -29,7 +29,7 @@ fu! s:syntax()
   en
 endf
 " Public {{{1
-fu! ctrlp#line#init(bufnr)
+fu! ctrlp#ag#init(bufnr)
   let [lines, bufnr] = [[], exists('s:bufnr') ? s:bufnr : a:bufnr]
   let bufs = exists('s:lnmode') && s:lnmode ? ctrlp#buffers('id') : [bufnr]
   for bufnr in bufs
@@ -50,7 +50,7 @@ fu! ctrlp#line#init(bufnr)
   retu lines
 endf
 
-fu! ctrlp#line#accept(mode, str)
+fu! ctrlp#ag#accept(mode, str)
   let info = matchlist(a:str, '\t|[^|]\+|\(\d\+\):\(\d\+\)|$')
   let bufnr = str2nr(get(info, 1))
   if bufnr
@@ -58,7 +58,7 @@ fu! ctrlp#line#accept(mode, str)
   en
 endf
 
-fu! ctrlp#line#cmd(mode, ...)
+fu! ctrlp#ag#cmd(mode, ...)
   let s:lnmode = a:mode
   if a:0 && !empty(a:1)
     let s:lnmode = 0
