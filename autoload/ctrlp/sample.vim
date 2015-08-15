@@ -1,5 +1,5 @@
 " =============================================================================
-" File:          autoload/ag.vim
+" File:          autoload/ctrlp/sample.vim
 " Description:   Example extension for ctrlp.vim
 " =============================================================================
 
